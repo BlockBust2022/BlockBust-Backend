@@ -20,87 +20,89 @@ import com.springboot.streamservice.service.MovieService;
 @Component
 public class MovieServiceImpl implements MovieService {
 
-	@Value("${streamtape.login}")
-	private String login;
+    @Value("${streamtape.login}")
+    private String login;
 
-	@Value("${streamtape.key}")
-	private String key;
+    @Value("${streamtape.key}")
+    private String key;
 
-	@Value("${tmdb.key}")
-	private String tmdbKey;
+    @Value("${tmdb.key}")
+    private String tmdbKey;
 
-	@Value("${streamtape.folder}")
-	private String folder;
+    @Value("${streamtape.folder}")
+    private String folder;
 
-	@Override
-	public String getMovieByid(String id) {
+    @Override
+    public String getMovieByid(String id) {
 
-		String tmbdUrl = StreamConstants.TMDB_URL + "/movie/" + id + StreamConstants.TMDB_API;
+        String tmbdUrl = StreamConstants.TMDB_URL + "/movie/" + id + StreamConstants.TMDB_API;
 
-		tmbdUrl = tmbdUrl.replace("{key}", tmdbKey);
+        tmbdUrl = tmbdUrl.replace("{key}", tmdbKey);
 
-		MovieResponse tmbdJson = WebClient.create().get().uri(tmbdUrl).retrieve().bodyToMono(MovieResponse.class)
-				.block();
+        MovieResponse tmbdJson = WebClient.create().get().uri(tmbdUrl).retrieve().bodyToMono(MovieResponse.class)
+                .block();
 
-		String imdbId = tmbdJson.imdb_id;
+        String imdbId = tmbdJson.imdb_id;
 
-		String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
+        String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
 
-		url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
+        url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
 
-		String json = WebClient.create().get().uri(url).retrieve().bodyToMono(String.class).block();
+        String json = WebClient.create().get().uri(url).retrieve().bodyToMono(String.class).block();
 
-		JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
+        JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
 
-		String allList = convertedObject.get("result").getAsJsonObject().get("files").toString();
+        String allList = convertedObject.get("result").getAsJsonObject().get("files").toString();
 
-		ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
 
-		List<HashMap<String, String>> myObjects = null;
-		try {
-			myObjects = mapper.readValue(allList, new TypeReference<List<HashMap<String, String>>>() {
-			});
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+        List<HashMap<String, String>> myObjects = null;
+        try {
+            myObjects = mapper.readValue(allList, new TypeReference<List<HashMap<String, String>>>() {
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-		List<Map<String, String>> res = new ArrayList<Map<String, String>>();
-		for (HashMap<String, String> map : myObjects) {
+        Map<String, String> res = new HashMap<String, String>();
+        for (HashMap<String, String> map : myObjects) {
 
-			if (map.get("name").contains(imdbId)) {
-				res.add(map);
-			}
-		}
+            if (map.get("name").contains(imdbId)) {
+                map.put("title", tmbdJson.title);
+                res.putAll(map);
+            }
+        }
 
-		if (res.isEmpty()) {
-			Map<String, String> hm = new HashMap<>();
-			hm.put("Error", "Not Found");
-			res.add(hm);
-		}
+        if (res.isEmpty()) {
+            String vidCloudUrl = StreamConstants.STREAMTAPE_URL.replace("{imdb}", imdbId);
+            res.put("link", vidCloudUrl);
+            res.put("title", tmbdJson.title);
 
-		return new Gson().toJson(res);
+        }
 
-	}
+        return new Gson().toJson(res);
 
-	@Override
-	public String searchMovieByName(String name, int page) {
+    }
 
-		String url = StreamConstants.TMDB_URL + "/search/movie" + StreamConstants.TMDB_API + "&query=" + name + "&page="
-				+ page;
+    @Override
+    public String searchMovieByName(String name, int page) {
 
-		url = url.replace("{key}", tmdbKey);
+        String url = StreamConstants.TMDB_URL + "/search/movie" + StreamConstants.TMDB_API + "&query=" + name + "&page="
+                + page;
 
-		MovieSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(MovieSearchResponse.class).block();
+        url = url.replace("{key}", tmdbKey);
 
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		String json = "";
-		try {
-			json = ow.writeValueAsString(res);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+        MovieSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(MovieSearchResponse.class).block();
 
-		return json;
-	}
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = "";
+        try {
+            json = ow.writeValueAsString(res);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
 
 }

@@ -11,6 +11,9 @@ public class StreamConstants {
 	public static final String TMDB_URL = "https://api.themoviedb.org/3/";
 	public static final String TMDB_API = "?api_key={key}";
 	public static final String TMDB_PAGE = "&page=";
+
+	// vidcloud
+	public static final String VIDCLOUD_URL = "https://vidclouds.us/{imdb}.html";
 	
 	
 }
