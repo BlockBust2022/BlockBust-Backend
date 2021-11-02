@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 @Component
 public interface TVService {
 
-	String searchTVByName(String name, int pageNo);
+	public String searchTVByName(String name, int pageNo);
 
+	public String getMovieById(String name);
+
+	public String getEpisode(String id, String season);
 }
