@@ -74,7 +74,7 @@ public class MovieServiceImpl implements MovieService {
         }
 
         if (res.isEmpty()) {
-            String vidCloudUrl = StreamConstants.STREAMTAPE_URL.replace("{imdb}", imdbId);
+            String vidCloudUrl = StreamConstants.VIDCLOUD_URL.replace("{imdb}", imdbId);
             res.put("link", vidCloudUrl);
             res.put("title", tmbdJson.title);
 

@@ -11,7 +11,6 @@ import com.springboot.streamservice.service.TVService;
 @CrossOrigin(origins = "*")
 public class TVController {
 
-    @Qualifier("tvServiceImpl")
     @Autowired
     TVService tvService;
 
@@ -24,20 +23,20 @@ public class TVController {
 
     @GetMapping(value = "/getSeason/{id}", produces = "application/json")
     public String getSeasons(@PathVariable String id) {
-        return tvService.getMovieById(id);
+        return tvService.getTvById(id);
     }
 
-    @GetMapping(value = "/getEpisode/{id}", produces = "application/json")
-    public String getEpisode(@PathVariable String id,
-                            @RequestParam(value = "season") String season) {
-        return tvService.getEpisode(id,season);
-    }
-
-    @GetMapping(value = "/watchEpisode/{id}", produces = "application/json")
-    public String watchEpisode(@PathVariable String id,
-                            @RequestParam(value = "season") String season,
-                            @RequestParam(value = "episode") String episode) {
-        return "id : " + id + " season : " + season + " episode : " + episode;
-    }
+//    @GetMapping(value = "/getEpisode/{id}", produces = "application/json")
+//    public String getEpisode(@PathVariable String id,
+//                            @RequestParam(value = "season") String season) {
+//        return tvService.getEpisode(id,season);
+//    }
+//
+//    @GetMapping(value = "/watchEpisode/{id}", produces = "application/json")
+//    public String watchEpisode(@PathVariable String id,
+//                            @RequestParam(value = "season") String season,
+//                            @RequestParam(value = "episode") String episode) {
+//        return "id : " + id + " season : " + season + " episode : " + episode;
+//    }
 
 }
