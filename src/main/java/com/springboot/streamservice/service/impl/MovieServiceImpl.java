@@ -68,7 +68,7 @@ public class MovieServiceImpl implements MovieService {
         if(200 == res.getStatus()) {
             for (StreamTapeFile file : res.getResult().getFiles()) {
                 if (file.getName().contains(imdbId)) {
-                    return file.getLink();
+                    return StreamConstants.STREAMTAPE_MOVIE_URL +file.getLinkid();
                 }
             }
 

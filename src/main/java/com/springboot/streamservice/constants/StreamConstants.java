@@ -4,6 +4,7 @@ public class StreamConstants {
 
 	// Stream Tape
 	public static final String STREAMTAPE_URL = "https://api.streamtape.com";
+	public static final String STREAMTAPE_MOVIE_URL = "https://streamta.pe/e/";
 	public static final String LIST_FILES = "/file/listfolder";
 	public static final String LOGIN = "?login={login}&key={key}&folder={folder}";
 	
