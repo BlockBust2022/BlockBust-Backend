@@ -1,24 +1,16 @@
 package com.springboot.streamservice.service.impl;
 
-import java.util.*;
-
-import com.springboot.streamservice.dao.StreamTapeDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.springboot.streamservice.bean.MovieResponse;
 import com.springboot.streamservice.bean.MovieSearchResponse;
+import com.springboot.streamservice.bean.StreamTapeResponse;
+import com.springboot.streamservice.bean.tmbdbean.StreamTapeFile;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.MovieService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -35,9 +27,6 @@ public class MovieServiceImpl implements MovieService {
     @Value("${streamtape.folder}")
     private String folder;
 
-    @Autowired
-    StreamTapeDAO streamTapeDAO;
-
     @Override
     public String getMovieByid(String id) {
 
@@ -50,7 +39,7 @@ public class MovieServiceImpl implements MovieService {
 
         String imdbId = tmbdJson.imdb_id;
 
-        tmbdJson.setUrl(streamTapeDAO.generateUrl(imdbId));
+        tmbdJson.setUrl(generateUrl(imdbId));
 
         return new Gson().toJson(tmbdJson);
 
@@ -67,6 +56,25 @@ public class MovieServiceImpl implements MovieService {
         MovieSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(MovieSearchResponse.class).block();
 
         return new Gson().toJson(res);
+    }
+
+    public String generateUrl(String imdbId) {
+        String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
+
+        url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
+
+        StreamTapeResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(StreamTapeResponse.class).block();
+
+        if(200 == res.getStatus()) {
+            for (StreamTapeFile file : res.getResult().getFiles()) {
+                if (file.getName().contains(imdbId)) {
+                    return file.getLink();
+                }
+            }
+
+        }
+
+        return StreamConstants.VIDCLOUD_URL.replace("{imdb}", imdbId);
     }
 
 }

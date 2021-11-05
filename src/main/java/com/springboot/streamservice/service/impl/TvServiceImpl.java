@@ -4,24 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.springboot.streamservice.bean.StreamTapeResponse;
 import com.springboot.streamservice.bean.TvEpisodeResponse;
+import com.springboot.streamservice.bean.TvSearchResponse;
 import com.springboot.streamservice.bean.TvSeasonResponse;
 import com.springboot.streamservice.bean.tmbdbean.Episode;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 import com.springboot.streamservice.bean.tmbdbean.StreamTapeFile;
-import com.springboot.streamservice.dao.StreamTapeDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.springboot.streamservice.bean.TvSearchResponse;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.TVService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class TvServiceImpl implements TVService {
@@ -37,9 +30,6 @@ public class TvServiceImpl implements TVService {
 
 	@Value("${streamtape.folder}")
 	private String folder;
-	
-	@Autowired
-	StreamTapeDAO streamTapeDAO;
 	
 	@Override
 	public String searchTVByName(String name, int pageNo) {
@@ -90,13 +80,7 @@ public class TvServiceImpl implements TVService {
 
 				if(!"null".equalsIgnoreCase(convertedObject.get("imdb_id").toString())) {
 					String imdbId = convertedObject.get("imdb_id").getAsString();
-//					episode.setUrl(streamTapeDAO.generateUrl(imdbId, showImdbIdUrl));
-
-					String tvUrl = StreamConstants.VIDCLOUD_TV_URL.replace("{imdb}", res.getImdbId())
-							.replace("{season}", String.valueOf(episode.getSeason_number()))
-							.replace("{episode}", String.valueOf(episode.getEpisode_number()));
-
-					episode.setUrl(tvUrl);
+					episode.setUrl(generateTvUrl(imdbId, res.getImdbId(), episode.getSeason_number(), episode.getEpisode_number()));
 				}else {
 					episode.setStatus("Not Avaliable");
 				}
@@ -104,6 +88,29 @@ public class TvServiceImpl implements TVService {
 		}
 
 		return new Gson().toJson(res);
+	}
+
+
+
+	public String generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
+		String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
+
+		url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
+
+		StreamTapeResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(StreamTapeResponse.class).block();
+
+		if(200 == res.getStatus()) {
+			for (StreamTapeFile file : res.getResult().getFiles()) {
+				if (file.getName().contains(imdbId)) {
+					return file.getLink();
+				}
+			}
+
+		}
+
+		return StreamConstants.VIDCLOUD_TV_URL.replace("{imdb}", showImdbIdUrl)
+				.replace("{season}", String.valueOf(season_number))
+				.replace("{episode}", String.valueOf(episode_number));
 	}
 
 }

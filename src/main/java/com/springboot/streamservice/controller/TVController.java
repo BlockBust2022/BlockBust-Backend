@@ -26,17 +26,4 @@ public class TVController {
         return tvService.getTvById(id);
     }
 
-//    @GetMapping(value = "/getEpisode/{id}", produces = "application/json")
-//    public String getEpisode(@PathVariable String id,
-//                            @RequestParam(value = "season") String season) {
-//        return tvService.getEpisode(id,season);
-//    }
-//
-//    @GetMapping(value = "/watchEpisode/{id}", produces = "application/json")
-//    public String watchEpisode(@PathVariable String id,
-//                            @RequestParam(value = "season") String season,
-//                            @RequestParam(value = "episode") String episode) {
-//        return "id : " + id + " season : " + season + " episode : " + episode;
-//    }
-
 }
