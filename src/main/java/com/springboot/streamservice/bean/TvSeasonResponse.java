@@ -1,5 +1,8 @@
 package com.springboot.streamservice.bean;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.springboot.streamservice.bean.tmbdbean.Genre;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 
@@ -11,7 +14,6 @@ public class TvSeasonResponse {
     public List<Genre> genres;
     public int id;
     public String name;
-    public Object next_episode_to_air;
     public int number_of_episodes;
     public int number_of_seasons;
     public List<String> origin_country;
@@ -19,6 +21,7 @@ public class TvSeasonResponse {
     public String original_name;
     public String overview;
     public String poster_path;
+    public String imdbId;
     public List<Seasons> seasons;
 
     public String getBackdrop_path() {
@@ -59,14 +62,6 @@ public class TvSeasonResponse {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Object getNext_episode_to_air() {
-        return next_episode_to_air;
-    }
-
-    public void setNext_episode_to_air(Object next_episode_to_air) {
-        this.next_episode_to_air = next_episode_to_air;
     }
 
     public int getNumber_of_episodes() {
@@ -132,4 +127,13 @@ public class TvSeasonResponse {
     public void setSeasons(List<Seasons> seasons) {
         this.seasons = seasons;
     }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
+    }
+
 }

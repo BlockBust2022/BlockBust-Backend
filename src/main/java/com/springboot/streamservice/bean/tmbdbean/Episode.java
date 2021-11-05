@@ -4,11 +4,13 @@ public class Episode {
     public String air_date;
     public int episode_number;
     public int id;
+    public String imdbId;
     public String name;
     public String overview;
     public int season_number;
     public String still_path;
     public String url;
+    public String status;
 
     public String getAir_date() {
         return air_date;
@@ -72,5 +74,21 @@ public class Episode {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 }
