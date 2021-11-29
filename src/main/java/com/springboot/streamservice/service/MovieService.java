@@ -8,4 +8,6 @@ public interface MovieService {
 	public String searchMovieByName(String name, int page);
 	
 	public String getMovieByid(String id);
+
+	public void moveToDb();
 }
