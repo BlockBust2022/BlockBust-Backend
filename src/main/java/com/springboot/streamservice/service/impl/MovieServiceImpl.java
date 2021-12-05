@@ -5,6 +5,7 @@ import com.springboot.streamservice.bean.MovieDbBean;
 import com.springboot.streamservice.bean.MovieResponse;
 import com.springboot.streamservice.bean.MovieSearchResponse;
 import com.springboot.streamservice.bean.StreamTapeResponse;
+import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.StreamTapeFile;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.dao.StreamTapeDao;
@@ -14,6 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -50,6 +55,49 @@ public class MovieServiceImpl implements MovieService {
 
         return new Gson().toJson(tmbdJson);
 
+    }
+
+    @Override
+    public String trendingMovies(int page) {
+
+        String url = StreamConstants.TMDB_URL + "trending/movie/day" + StreamConstants.TMDB_API + "&page="
+                + page;
+
+        url = url.replace("{key}", tmdbKey);
+
+//        String timeStamp = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date today = new Date();
+
+        MovieSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(MovieSearchResponse.class).block();
+
+        try{
+
+            Iterator<Result> iter = res.results.iterator();
+
+            while (iter.hasNext()) {
+                Date newDate = sdf.parse(iter.next().getRelease_date());
+                if(newDate.after(today)){
+                    iter.remove();
+                }
+            }
+        }catch (Exception e){
+            System.err.println("Movie Service Impl || trendingMovies ||"+e);
+        }
+
+        return new Gson().toJson(res);
+    }
+
+    @Override
+    public String similarMovies(String id) {
+        String url = StreamConstants.TMDB_URL + "movie/" + id + "/similar" + StreamConstants.TMDB_API;
+
+        url = url.replace("{key}", tmdbKey);
+
+        MovieSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(MovieSearchResponse.class).block();
+
+        return new Gson().toJson(res);
     }
 
     @Override
