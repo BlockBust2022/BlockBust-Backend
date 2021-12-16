@@ -14,7 +14,7 @@ public class StreamConstants {
 	public static final String TMDB_PAGE = "&page=";
 
 	// vidcloud
-	public static final String VIDCLOUD_URL = "https://vidclouds.us/{imdb}.html";
+	public static final String VIDCLOUD_URL = "https://www.2embed.ru/embed/imdb/movie?id={imdb}" //"https://vidclouds.us/{imdb}.html";
 	public static final String VIDCLOUD_TV_URL = "https://vidclouds.us/tv.php?imdb={imdb}&season={season}&episode={episode}";
 
 	public static final String MOVIE = "movie";
