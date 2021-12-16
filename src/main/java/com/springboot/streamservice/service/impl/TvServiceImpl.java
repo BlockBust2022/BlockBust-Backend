@@ -2,11 +2,9 @@ package com.springboot.streamservice.service.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.springboot.streamservice.bean.StreamTapeResponse;
-import com.springboot.streamservice.bean.TvEpisodeResponse;
-import com.springboot.streamservice.bean.TvSearchResponse;
-import com.springboot.streamservice.bean.TvSeasonResponse;
+import com.springboot.streamservice.bean.*;
 import com.springboot.streamservice.bean.tmbdbean.Episode;
+import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 import com.springboot.streamservice.bean.tmbdbean.StreamTapeFile;
 import com.springboot.streamservice.constants.StreamConstants;
@@ -15,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
 
 @Service
 public class TvServiceImpl implements TVService {
@@ -39,7 +41,7 @@ public class TvServiceImpl implements TVService {
 
 		url = url.replace("{key}", tmdbKey);
 
-		TvSearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(TvSearchResponse.class).block();
+		SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
 
 		return new Gson().toJson(res);
 	}
@@ -89,7 +91,6 @@ public class TvServiceImpl implements TVService {
 
 		return new Gson().toJson(res);
 	}
-
 
 
 	public String generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {

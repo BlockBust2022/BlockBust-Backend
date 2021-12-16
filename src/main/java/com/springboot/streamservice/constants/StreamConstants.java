@@ -16,6 +16,7 @@ public class StreamConstants {
 	// vidcloud
 	public static final String VIDCLOUD_URL = "https://vidclouds.us/{imdb}.html";
 	public static final String VIDCLOUD_TV_URL = "https://vidclouds.us/tv.php?imdb={imdb}&season={season}&episode={episode}";
-	
-	
+
+	public static final String MOVIE = "movie";
+	public static final String TV = "tv";
 }
