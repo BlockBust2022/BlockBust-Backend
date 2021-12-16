@@ -9,7 +9,7 @@ public interface MovieService {
 	
 	public String getMovieByid(String id);
 
-	public String trendingMovies(int page);
+	public String trendingMovies(int page, String source);
 
 	public String similarMovies(String id);
 
