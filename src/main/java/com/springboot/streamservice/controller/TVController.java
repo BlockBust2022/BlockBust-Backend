@@ -1,6 +1,7 @@
 package com.springboot.streamservice.controller;
 
 import com.springboot.streamservice.constants.StreamConstants;
+import com.springboot.streamservice.service.CommonService;
 import com.springboot.streamservice.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +18,7 @@ public class TVController {
     TVService tvService;
 
     @Autowired
-    MovieService movieService;
+    CommonService commonService;
 
     @GetMapping(value = "/searchTv", produces = "application/json")
     public String searchMovie(@RequestParam(value = "name") String name,
@@ -34,6 +35,6 @@ public class TVController {
     @GetMapping(value = "/trendingTv", produces = "application/json")
     public String trendingMovies(@RequestParam(value = "page", required = false) String page) {
         int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
-        return movieService.trendingMovies(pageNo, StreamConstants.TV);
+        return commonService.trendingMovies(pageNo, StreamConstants.TV);
     }
 }
