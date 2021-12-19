@@ -1,0 +1,25 @@
+show databases;
+
+use streamdb;
+
+-----------------------------------------------------------------------------------------------
+
+create table stream(
+   id INT NOT NULL AUTO_INCREMENT,
+   movie_name VARCHAR(100) NOT NULL,
+   url VARCHAR(100) NOT NULL,
+   imdbid VARCHAR(10) NOT NULL,
+   PRIMARY KEY ( id )
+);
+
+create table featured(
+   id INT NOT NULL AUTO_INCREMENT,
+   imdbid VARCHAR(10) NOT NULL,
+   type VARCHAR(10) NOT NULL,
+   PRIMARY KEY ( id )
+);
+
+-----------------------------------------------------------------------------------------------
+select * from stream;
+
+select * from featured;

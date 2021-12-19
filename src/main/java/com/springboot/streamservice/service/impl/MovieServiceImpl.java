@@ -55,61 +55,6 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public String trendingMovies(int page, String source) {
-
-        String url = StreamConstants.TMDB_URL + "trending/" + source + "/day" + StreamConstants.TMDB_API + "&page="
-                + page;
-
-        url = url.replace("{key}", tmdbKey);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-        Date today = new Date();
-
-        try {
-
-            if (StreamConstants.MOVIE.equalsIgnoreCase(source)) {
-                SearchResponse res;
-                Iterator<Result> iter;
-
-                res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-                iter = res.results.iterator();
-
-                while (iter.hasNext()) {
-                    Date newDate = sdf.parse(iter.next().getRelease_date());
-                    if (newDate.after(today)) {
-                        iter.remove();
-                    }
-                }
-
-                return new Gson().toJson(res);
-
-            } else if (StreamConstants.TV.equalsIgnoreCase(source)) {
-                TvTrendingResponse tvRes;
-                Iterator<TvSeasonResponse> tvIter;
-
-                tvRes = WebClient.create().get().uri(url).retrieve().bodyToMono(TvTrendingResponse.class).block();
-                tvIter = tvRes.results.iterator();
-
-                while (tvIter.hasNext()) {
-                    Date newDate = sdf.parse(tvIter.next().getFirst_air_date());
-
-                    if (newDate.after(today)) {
-                        tvIter.remove();
-                    }
-                }
-
-                return new Gson().toJson(tvRes);
-                
-            }
-        } catch (Exception e) {
-            System.err.println("Movie Service Impl || trendingMovies ||" + e);
-        }
-
-        return new Gson().toJson("{\"Error\": \"invalid\"}");
-    }
-
-    @Override
     public String similarMovies(String id) {
         String url = StreamConstants.TMDB_URL + "movie/" + id + "/similar" + StreamConstants.TMDB_API;
 
@@ -173,7 +118,7 @@ public class MovieServiceImpl implements MovieService {
 
         }
 
-        return StreamConstants.VIDCLOUD_URL.replace("{imdb}", imdbId);
+        return StreamConstants.SERVER_URL.replace("{imdb}", imdbId);
     }
 
 }

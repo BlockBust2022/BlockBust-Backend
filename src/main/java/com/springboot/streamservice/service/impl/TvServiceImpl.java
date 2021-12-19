@@ -109,7 +109,7 @@ public class TvServiceImpl implements TVService {
 
 		}
 
-		return StreamConstants.VIDCLOUD_TV_URL.replace("{imdb}", showImdbIdUrl)
+		return StreamConstants.SERVER_TV_URL.replace("{imdb}", showImdbIdUrl)
 				.replace("{season}", String.valueOf(season_number))
 				.replace("{episode}", String.valueOf(episode_number));
 	}
