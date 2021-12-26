@@ -37,4 +37,9 @@ public class TVController {
         int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
         return commonService.trendingMovies(pageNo, StreamConstants.TV);
     }
+
+    @GetMapping(value = "/similarTv/{id}", produces = "application/json")
+    public String similarMovies(@PathVariable String id) {
+        return commonService.similarMovies(id, StreamConstants.TV);
+    }
 }

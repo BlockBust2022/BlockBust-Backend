@@ -71,7 +71,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void updateFeatured(Featured featured) {
-        featuredDao.insertFeatured(featured);
+//        featuredDao.insertFeatured(featured);
     }
 
     @Override
@@ -127,5 +127,16 @@ public class CommonServiceImpl implements CommonService {
         }
 
         return new Gson().toJson("{\"Error\": \"invalid\"}");
+    }
+
+    @Override
+    public String similarMovies(String id, String source) {
+        String url = StreamConstants.TMDB_URL + source + "/" + id + "/similar" + StreamConstants.TMDB_API;
+
+        url = url.replace("{key}", tmdbKey);
+
+        SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
+
+        return new Gson().toJson(res);
     }
 }
