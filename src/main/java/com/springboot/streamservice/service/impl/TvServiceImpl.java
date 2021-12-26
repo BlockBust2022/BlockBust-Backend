@@ -8,6 +8,7 @@ import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 import com.springboot.streamservice.bean.tmbdbean.StreamTapeFile;
 import com.springboot.streamservice.constants.StreamConstants;
+import com.springboot.streamservice.dao.StreamTapeDao;
 import com.springboot.streamservice.service.TVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class TvServiceImpl implements TVService {
@@ -32,6 +34,9 @@ public class TvServiceImpl implements TVService {
 
 	@Value("${streamtape.folder}")
 	private String folder;
+
+	@Autowired
+	StreamTapeDao streamTapeDao;
 	
 	@Override
 	public String searchTVByName(String name, int pageNo) {
@@ -82,6 +87,7 @@ public class TvServiceImpl implements TVService {
 
 				if(!"null".equalsIgnoreCase(convertedObject.get("imdb_id").toString())) {
 					String imdbId = convertedObject.get("imdb_id").getAsString();
+					episode.setImdbId(imdbId);
 					episode.setUrl(generateTvUrl(imdbId, res.getImdbId(), episode.getSeason_number(), episode.getEpisode_number()));
 				}else {
 					episode.setStatus("Not Avaliable");
@@ -94,19 +100,17 @@ public class TvServiceImpl implements TVService {
 
 
 	public String generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
-		String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
 
-		url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
+		try {
+			List<MovieDbBean> movieDbBeans = streamTapeDao.findByImdbId(imdbId);
 
-		StreamTapeResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(StreamTapeResponse.class).block();
-
-		if(200 == res.getStatus()) {
-			for (StreamTapeFile file : res.getResult().getFiles()) {
-				if (file.getName().contains(imdbId)) {
-					return file.getLink();
+			for (MovieDbBean file : movieDbBeans) {
+				if (file.getImdbid().equalsIgnoreCase(imdbId)) {
+					return StreamConstants.STREAMTAPE_MOVIE_URL + file.getUrl();
 				}
 			}
-
+		} catch (Exception e) {
+			System.err.println(e);
 		}
 
 		return StreamConstants.SERVER_TV_URL.replace("{imdb}", showImdbIdUrl)

@@ -39,7 +39,7 @@ public class MovieController {
 
     @GetMapping(value = "/similarMovies/{id}", produces = "application/json")
     public String similarMovies(@PathVariable String id) {
-        return movieService.similarMovies(id);
+        return commonService.similarMovies(id, StreamConstants.MOVIE);
     }
 
 }

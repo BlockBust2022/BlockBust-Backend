@@ -55,17 +55,6 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public String similarMovies(String id) {
-        String url = StreamConstants.TMDB_URL + "movie/" + id + "/similar" + StreamConstants.TMDB_API;
-
-        url = url.replace("{key}", tmdbKey);
-
-        SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
-        return new Gson().toJson(res);
-    }
-
-    @Override
     public void moveToDb() {
 
         String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;

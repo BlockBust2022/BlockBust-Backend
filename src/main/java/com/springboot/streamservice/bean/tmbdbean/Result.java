@@ -9,11 +9,11 @@ public class Result {
     public List<String> origin_country;
     public String original_language;
     public String original_name;
-    public String overview;
     public String poster_path;
     public String original_title;
     public String title;
     public String release_date;
+    public String first_air_date;
 
     public String getBackdrop_path() {
         return backdrop_path;
@@ -63,14 +63,6 @@ public class Result {
         this.original_name = original_name;
     }
 
-    public String getOverview() {
-        return overview;
-    }
-
-    public void setOverview(String overview) {
-        this.overview = overview;
-    }
-
     public String getPoster_path() {
         return poster_path;
     }
@@ -101,5 +93,13 @@ public class Result {
 
     public void setRelease_date(String release_date) {
         this.release_date = release_date;
+    }
+
+    public String getFirst_air_date() {
+        return first_air_date;
+    }
+
+    public void setFirst_air_date(String first_air_date) {
+        this.first_air_date = first_air_date;
     }
 }

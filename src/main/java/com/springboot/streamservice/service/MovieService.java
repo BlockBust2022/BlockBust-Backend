@@ -9,7 +9,5 @@ public interface MovieService {
 	
 	public String getMovieByid(String id);
 
-	public String similarMovies(String id);
-
 	public void moveToDb();
 }

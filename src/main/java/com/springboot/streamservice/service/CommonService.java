@@ -11,4 +11,6 @@ public interface CommonService {
     public void updateFeatured(Featured featured);
 
     public String trendingMovies(int page, String source);
+
+    public String similarMovies(String id, String source);
 }
