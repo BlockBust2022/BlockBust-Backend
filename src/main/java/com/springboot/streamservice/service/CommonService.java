@@ -13,4 +13,6 @@ public interface CommonService {
     public String trendingMovies(int page, String source);
 
     public String similarMovies(String id, String source);
+
+    public String search(String name, int pageNo);
 }
