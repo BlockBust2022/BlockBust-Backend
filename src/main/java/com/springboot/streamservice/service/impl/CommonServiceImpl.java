@@ -139,4 +139,17 @@ public class CommonServiceImpl implements CommonService {
 
         return new Gson().toJson(res);
     }
+
+    @Override
+    public String search(String name, int pageNo) {
+
+        String url = StreamConstants.TMDB_URL + "/search/multi" + StreamConstants.TMDB_API + "&query=" + name + "&page="
+                + pageNo;
+
+        url = url.replace("{key}", tmdbKey);
+
+        SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
+
+        return new Gson().toJson(res);
+    }
 }

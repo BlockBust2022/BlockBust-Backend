@@ -14,6 +14,7 @@ public class Result {
     public String title;
     public String release_date;
     public String first_air_date;
+    public String media_type;
 
     public String getBackdrop_path() {
         return backdrop_path;
@@ -101,5 +102,13 @@ public class Result {
 
     public void setFirst_air_date(String first_air_date) {
         this.first_air_date = first_air_date;
+    }
+
+    public String getMedia_type() {
+        return media_type;
+    }
+
+    public void setMedia_type(String media_type) {
+        this.media_type = media_type;
     }
 }
