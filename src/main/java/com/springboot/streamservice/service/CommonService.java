@@ -15,4 +15,6 @@ public interface CommonService {
     public String similarMovies(String id, String source);
 
     public String search(String name, int pageNo);
+
+    public String moveToDb();
 }

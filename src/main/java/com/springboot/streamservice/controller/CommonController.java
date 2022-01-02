@@ -39,11 +39,11 @@ public class CommonController {
         commonService.updateFeatured(featured);
     }
 
-//    @GetMapping(value = "/moveToDb", produces = "application/json")
-////    @Scheduled(cron = "0 * * ? * *")
-//    public String moveToDb() {
-//        System.out.println("Testing");
-//
-//        return "here";
-//    }
+    @GetMapping(value = "/moveToDb", produces = "application/json")
+//    @Scheduled(cron = "0 * * ? * *")
+    public String moveToDb() {
+        System.out.println("Testing");
+        commonService.moveToDb();
+        return "here";
+    }
 }
