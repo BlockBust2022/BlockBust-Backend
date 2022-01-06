@@ -126,7 +126,7 @@ public class TvServiceImpl implements TVService {
 
 			for (MovieDbBean file : movieDbBeans) {
 				if (file.getImdbid().equalsIgnoreCase(imdbId)) {
-					return StreamConstants.STREAMTAPE_MOVIE_URL + file.getUrl();
+					return StreamConstants.STREAMSB_WATCH_URL + file.getUrl();
 				}
 			}
 		} catch (Exception e) {
