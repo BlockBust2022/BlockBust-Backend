@@ -91,7 +91,7 @@ public class MovieServiceImpl implements MovieService {
 
             for (MovieDbBean file : movieDbBeans) {
                 if (file.getImdbid().equalsIgnoreCase(imdbId)) {
-                    return StreamConstants.STREAMTAPE_MOVIE_URL + file.getUrl();
+                    return StreamConstants.STREAMSB_URL + file.getUrl();
                 }
             }
         } catch (Exception e) {
