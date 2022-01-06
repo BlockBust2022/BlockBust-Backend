@@ -2,10 +2,14 @@ package com.springboot.streamservice.service.impl;
 
 import com.google.gson.Gson;
 import com.springboot.streamservice.bean.*;
+import com.springboot.streamservice.bean.StreamSb.StreamSbFiles;
+import com.springboot.streamservice.bean.StreamSb.StreamSbResponse;
 import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.TMDBFeaturedResponse;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.dao.FeaturedDao;
+import com.springboot.streamservice.dao.StreamSbDao;
+import com.springboot.streamservice.dao.StreamTapeDao;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +28,14 @@ public class CommonServiceImpl implements CommonService {
     @Value("${tmdb.key}")
     private String tmdbKey;
 
+    @Value("${streamsb.key}")
+    private String streamSbKey;
+
     @Autowired
     FeaturedDao featuredDao;
+
+    @Autowired
+    StreamSbDao streamSbDao;
 
     @Override
     public String featured() {
@@ -151,5 +161,24 @@ public class CommonServiceImpl implements CommonService {
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
 
         return new Gson().toJson(res);
+    }
+
+    @Override
+    public String moveToDb() {
+        String url = StreamConstants.STREAMSB_URL.replace("{key}", streamSbKey);
+
+        StreamSbResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(StreamSbResponse.class).block();
+
+        if (200 == res.status) {
+            for (StreamSbFiles files : res.result.files) {
+
+                try {
+                    streamSbDao.moveToDb(files.file_code, files.title);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        }
+        return "";
     }
 }

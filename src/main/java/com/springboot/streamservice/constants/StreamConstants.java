@@ -8,6 +8,9 @@ public class StreamConstants {
     public static final String LIST_FILES = "/file/listfolder";
     public static final String LOGIN = "?login={login}&key={key}&folder={folder}";
 
+    // StreamSB
+    public static final String STREAMSB_URL = "https://api.streamsb.com/api/file/list?key={key}";
+
     // TMDB
     public static final String TMDB_URL = "https://api.themoviedb.org/3/";
     public static final String TMDB_API = "?api_key={key}";
