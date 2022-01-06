@@ -21,17 +21,8 @@ import java.util.stream.Stream;
 @Service
 public class MovieServiceImpl implements MovieService {
 
-    @Value("${streamtape.login}")
-    private String login;
-
-    @Value("${streamtape.key}")
-    private String key;
-
     @Value("${tmdb.key}")
     private String tmdbKey;
-
-    @Value("${streamtape.folder}")
-    private String folder;
 
     @Autowired
     StreamTapeDao streamTapeDao;
@@ -59,7 +50,7 @@ public class MovieServiceImpl implements MovieService {
 
         String url = StreamConstants.STREAMTAPE_URL + StreamConstants.LIST_FILES + StreamConstants.LOGIN;
 
-        url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
+//        url = url.replace("{login}", login).replace("{key}", key).replace("{folder}", folder);
 
         StreamTapeResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(StreamTapeResponse.class).block();
 
