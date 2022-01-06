@@ -10,6 +10,7 @@ public class StreamConstants {
 
     // StreamSB
     public static final String STREAMSB_URL = "https://api.streamsb.com/api/file/list?key={key}";
+    public static final String STREAMSB_WATCH_URL = "https://watchsb.com/e/";
 
     // TMDB
     public static final String TMDB_URL = "https://api.themoviedb.org/3/";
