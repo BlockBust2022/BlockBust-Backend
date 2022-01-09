@@ -9,7 +9,7 @@ import com.springboot.streamservice.bean.TvSeasonResponse;
 import com.springboot.streamservice.bean.tmbdbean.Episode;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 import com.springboot.streamservice.constants.StreamConstants;
-import com.springboot.streamservice.dao.StreamTapeDao;
+import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.TVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +25,7 @@ public class TvServiceImpl implements TVService {
 	private String tmdbKey;
 
 	@Autowired
-	StreamTapeDao streamTapeDao;
+	private CommonDao commonDao;
 	
 	@Override
 	public String searchTVByName(String name, int pageNo) {
@@ -122,7 +122,7 @@ public class TvServiceImpl implements TVService {
 	public String generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
 
 		try {
-			List<MovieDbBean> movieDbBeans = streamTapeDao.findByImdbId(imdbId);
+			List<MovieDbBean> movieDbBeans = commonDao.findByImdbId(imdbId);
 
 			for (MovieDbBean file : movieDbBeans) {
 				if (file.getImdbid().equalsIgnoreCase(imdbId)) {

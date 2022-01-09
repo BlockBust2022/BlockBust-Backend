@@ -7,12 +7,11 @@ import com.springboot.streamservice.bean.StreamSb.StreamSbResponse;
 import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.TMDBFeaturedResponse;
 import com.springboot.streamservice.constants.StreamConstants;
-import com.springboot.streamservice.dao.FeaturedDao;
-import com.springboot.streamservice.dao.StreamSbDao;
-import com.springboot.streamservice.dao.StreamTapeDao;
+import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -32,15 +31,15 @@ public class CommonServiceImpl implements CommonService {
     private String streamSbKey;
 
     @Autowired
-    FeaturedDao featuredDao;
+    private CommonDao commonDao;
 
     @Autowired
-    StreamSbDao streamSbDao;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public String featured() {
 
-        List<Featured> featuredList = featuredDao.featured();
+        List<Featured> featuredList = commonDao.featured();
         List<FeaturedResponse> featuredResponses = new ArrayList<>();
 
         for (Featured featured : featuredList) {
@@ -186,12 +185,25 @@ public class CommonServiceImpl implements CommonService {
             for (StreamSbFiles files : res.result.files) {
 
                 try {
-                    streamSbDao.moveToDb(files.file_code, files.title);
+                    commonDao.moveToDb(files.file_code, files.title);
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             }
+            return "Successfully Moved data to DB";
         }
-        return "";
+        return "Error Moving data to DB";
+    }
+
+    @Override
+    public String registerUser(UserBean user) {
+
+        if(commonDao.checkIfUserExist(user.getUserName()) < 1){
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }else {
+            return "Account already Exist with this userName : " + user.getUserName();
+        }
+
+        return commonDao.insertUser(user);
     }
 }
