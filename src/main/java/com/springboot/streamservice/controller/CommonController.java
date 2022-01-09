@@ -32,18 +32,4 @@ public class CommonController {
     public String featured() {
         return commonService.featured();
     }
-
-    //TODO: Update Multiple entries
-    @PostMapping(value = "/updateFeatured", produces = "application/json")
-    public void updateFeatured(@RequestBody Featured featured) {
-        commonService.updateFeatured(featured);
-    }
-
-    @GetMapping(value = "/moveToDb", produces = "application/json")
-//    @Scheduled(cron = "0 * * ? * *")
-    public String moveToDb() {
-        System.out.println("Testing");
-        commonService.moveToDb();
-        return "here";
-    }
 }
