@@ -160,6 +160,19 @@ public class CommonServiceImpl implements CommonService {
 
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
 
+        List<Result> removeList = new ArrayList<>();
+
+        for (Result result : res.getResults()) {
+            if (null == result.getPoster_path() || (!"movie".equalsIgnoreCase(result.getMedia_type())
+                    && !"tv".equalsIgnoreCase(result.getMedia_type()))) {
+                removeList.add(result);
+            }
+        }
+
+        res.getResults().removeAll(removeList);
+
+        res.setTotal_results(res.getResults().size());
+
         return new Gson().toJson(res);
     }
 
