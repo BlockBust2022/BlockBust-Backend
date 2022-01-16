@@ -11,6 +11,8 @@ import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -79,8 +81,23 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void updateFeatured(Featured featured) {
-//        featuredDao.insertFeatured(featured);
+    public ResponseEntity<?> updateFeatured(List<Featured> featuredList) {
+        try{
+
+            for (Featured featured :
+                    featuredList) {
+                String res = commonDao.insertFeatured(featured);
+                if ("No Record Updated".equalsIgnoreCase(res) || "Exception Updating Records".equalsIgnoreCase(res)) {
+                    return new ResponseEntity<>("Failed", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+
+        } catch (Exception e){
+            return new ResponseEntity<>("Failed", HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
     @Override
@@ -150,7 +167,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public String search(String name, int pageNo) {
+    public ResponseEntity search(String name, int pageNo) {
 
         String url = StreamConstants.TMDB_URL + "/search/multi" + StreamConstants.TMDB_API + "&query=" + name + "&page="
                 + pageNo;
@@ -172,7 +189,7 @@ public class CommonServiceImpl implements CommonService {
 
         res.setTotal_results(res.getResults().size());
 
-        return new Gson().toJson(res);
+        return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -57,10 +58,9 @@ public class AdminController {
         return ResponseEntity.ok(commonService.registerUser(user));
     }
 
-    //TODO: Update Multiple entries
     @PostMapping(value = "/updateFeatured", produces = "application/json")
-    public void updateFeatured(@RequestBody Featured featured) {
-        commonService.updateFeatured(featured);
+    public ResponseEntity<?> updateFeatured(@RequestBody List<Featured> featured) {
+        return commonService.updateFeatured(featured);
     }
 
     @GetMapping(value = "/moveToDb", produces = "application/json")
