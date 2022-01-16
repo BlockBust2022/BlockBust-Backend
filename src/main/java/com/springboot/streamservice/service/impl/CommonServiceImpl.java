@@ -145,7 +145,7 @@ public class CommonServiceImpl implements CommonService {
         url = url.replace("{key}", tmdbKey);
 
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
+        res.getResults().retainAll(res.getResults().subList(0,8));
         return new Gson().toJson(res);
     }
 
