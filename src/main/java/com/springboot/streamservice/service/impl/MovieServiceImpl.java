@@ -39,19 +39,6 @@ public class MovieServiceImpl implements MovieService {
 
     }
 
-    @Override
-    public String searchMovieByName(String name, int page) {
-
-        String url = StreamConstants.TMDB_URL + "/search/movie" + StreamConstants.TMDB_API + "&query=" + name + "&page="
-                + page;
-
-        url = url.replace("{key}", tmdbKey);
-
-        SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
-        return new Gson().toJson(res);
-    }
-
     public String generateUrl(String imdbId) {
 
         try {

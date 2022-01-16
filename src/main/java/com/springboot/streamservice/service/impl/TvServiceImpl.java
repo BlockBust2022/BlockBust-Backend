@@ -26,19 +26,6 @@ public class TvServiceImpl implements TVService {
 
 	@Autowired
 	private CommonDao commonDao;
-	
-	@Override
-	public String searchTVByName(String name, int pageNo) {
-
-		String url = StreamConstants.TMDB_URL + "/search/tv" + StreamConstants.TMDB_API + "&query=" + name + "&page="
-				+ pageNo;
-
-		url = url.replace("{key}", tmdbKey);
-
-		SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
-		return new Gson().toJson(res);
-	}
 
 	@Override
 	public String getTvById(String id) {

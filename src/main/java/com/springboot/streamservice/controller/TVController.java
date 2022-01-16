@@ -17,13 +17,6 @@ public class TVController {
     @Autowired
     CommonService commonService;
 
-    @GetMapping(value = "/searchTv", produces = "application/json")
-    public String searchTv(@RequestParam(value = "name") String name,
-                              @RequestParam(value = "page", required = false) String page) {
-        int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
-        return tvService.searchTVByName(name, pageNo);
-    }
-
     @GetMapping(value = "/getSeason/{id}", produces = "application/json")
     public String getSeasons(@PathVariable String id) {
         return tvService.getTvById(id);
