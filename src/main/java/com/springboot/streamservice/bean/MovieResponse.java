@@ -20,7 +20,7 @@ public class MovieResponse{
     public String release_date;
     public int runtime;
     public String title;
-    public String url;
+    public List<String> url;
 
     public boolean isAdult() {
         return adult;
@@ -118,11 +118,11 @@ public class MovieResponse{
         this.title = title;
     }
 
-    public String getUrl() {
+    public List<String> getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(List<String> url) {
         this.url = url;
     }
 }

@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -176,20 +173,29 @@ public class CommonServiceImpl implements CommonService {
 
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
 
-        List<Result> removeList = new ArrayList<>();
+        if (res.getResults().size() > 0) {
+            List<Result> removeList = new ArrayList<>();
 
-        for (Result result : res.getResults()) {
-            if (null == result.getPoster_path() || (!"movie".equalsIgnoreCase(result.getMedia_type())
-                    && !"tv".equalsIgnoreCase(result.getMedia_type()))) {
-                removeList.add(result);
+            for (Result result : res.getResults()) {
+                if (null == result.getPoster_path() || (!"movie".equalsIgnoreCase(result.getMedia_type())
+                        && !"tv".equalsIgnoreCase(result.getMedia_type()))) {
+                    removeList.add(result);
+                }
             }
+
+            res.getResults().removeAll(removeList);
+
+            res.setTotal_results(res.getResults().size());
+
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } else {
+
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "Not Found");
+
+            return new ResponseEntity<>(map, HttpStatus.I_AM_A_TEAPOT);
         }
 
-        res.getResults().removeAll(removeList);
-
-        res.setTotal_results(res.getResults().size());
-
-        return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
     @Override
