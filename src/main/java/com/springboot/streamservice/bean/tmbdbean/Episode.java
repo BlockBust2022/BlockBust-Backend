@@ -1,5 +1,7 @@
 package com.springboot.streamservice.bean.tmbdbean;
 
+import java.util.List;
+
 public class Episode {
     public String air_date;
     public int episode_number;
@@ -9,7 +11,7 @@ public class Episode {
     public String overview;
     public int season_number;
     public String still_path;
-    public String url;
+    public List<String> url;
     public String status;
 
     public String getAir_date() {
@@ -68,11 +70,11 @@ public class Episode {
         this.still_path = still_path;
     }
 
-    public String getUrl() {
+    public List<String> getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(List<String> url) {
         this.url = url;
     }
 

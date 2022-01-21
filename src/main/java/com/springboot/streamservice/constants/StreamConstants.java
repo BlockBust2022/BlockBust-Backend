@@ -20,4 +20,5 @@ public class StreamConstants {
     public static final String TV = "tv";
     public static final String INSERT = "insert";
     public static final String DELETE = "delete";
+    public static final String UPDATE = "update";
 }

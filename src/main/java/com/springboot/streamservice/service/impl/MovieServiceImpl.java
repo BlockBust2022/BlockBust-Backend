@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,34 +40,25 @@ public class MovieServiceImpl implements MovieService {
 
     }
 
-    @Override
-    public String searchMovieByName(String name, int page) {
+    public List<String> generateUrl(String imdbId) {
 
-        String url = StreamConstants.TMDB_URL + "/search/movie" + StreamConstants.TMDB_API + "&query=" + name + "&page="
-                + page;
-
-        url = url.replace("{key}", tmdbKey);
-
-        SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
-        return new Gson().toJson(res);
-    }
-
-    public String generateUrl(String imdbId) {
+        List<String> server = new ArrayList<>();
 
         try {
             List<MovieDbBean> movieDbBeans = commonDao.findByImdbId(imdbId);
 
             for (MovieDbBean file : movieDbBeans) {
                 if (file.getImdbid().equalsIgnoreCase(imdbId)) {
-                    return StreamConstants.STREAMSB_WATCH_URL + file.getUrl();
+                    server.add(StreamConstants.STREAMSB_WATCH_URL + file.getUrl());
                 }
             }
         } catch (Exception e) {
-
+            System.out.println(e);
         }
 
-        return StreamConstants.SERVER_URL.replace("{imdb}", imdbId);
+        server.add(StreamConstants.SERVER_URL.replace("{imdb}", imdbId));
+
+        return server;
     }
 
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,19 +27,6 @@ public class TvServiceImpl implements TVService {
 
 	@Autowired
 	private CommonDao commonDao;
-	
-	@Override
-	public String searchTVByName(String name, int pageNo) {
-
-		String url = StreamConstants.TMDB_URL + "/search/tv" + StreamConstants.TMDB_API + "&query=" + name + "&page="
-				+ pageNo;
-
-		url = url.replace("{key}", tmdbKey);
-
-		SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
-		return new Gson().toJson(res);
-	}
 
 	@Override
 	public String getTvById(String id) {
@@ -119,23 +107,25 @@ public class TvServiceImpl implements TVService {
 	}
 
 
-	public String generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
-
+	public List<String> generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
+		List<String> list = new ArrayList<>();
 		try {
 			List<MovieDbBean> movieDbBeans = commonDao.findByImdbId(imdbId);
 
 			for (MovieDbBean file : movieDbBeans) {
 				if (file.getImdbid().equalsIgnoreCase(imdbId)) {
-					return StreamConstants.STREAMSB_WATCH_URL + file.getUrl();
+					list.add(StreamConstants.STREAMSB_WATCH_URL + file.getUrl());
 				}
 			}
 		} catch (Exception e) {
 			System.err.println(e);
 		}
 
-		return StreamConstants.SERVER_TV_URL.replace("{imdb}", showImdbIdUrl)
+		list.add(StreamConstants.SERVER_TV_URL.replace("{imdb}", showImdbIdUrl)
 				.replace("{season}", String.valueOf(season_number))
-				.replace("{episode}", String.valueOf(episode_number));
+				.replace("{episode}", String.valueOf(episode_number)));
+
+		return list;
 	}
 
 }

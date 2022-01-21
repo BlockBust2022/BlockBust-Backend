@@ -16,7 +16,7 @@ public interface CommonDao {
 
     public List<Featured> featured();
 
-    public void insertFeatured (Featured featured);
+    public String insertFeatured (Featured featured);
 
     public UserBean getUserfromUserName (String userName);
 

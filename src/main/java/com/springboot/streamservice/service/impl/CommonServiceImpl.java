@@ -11,15 +11,14 @@ import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CommonServiceImpl implements CommonService {
@@ -79,8 +78,23 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void updateFeatured(Featured featured) {
-//        featuredDao.insertFeatured(featured);
+    public ResponseEntity<?> updateFeatured(List<Featured> featuredList) {
+        try{
+
+            for (Featured featured :
+                    featuredList) {
+                String res = commonDao.insertFeatured(featured);
+                if ("No Record Updated".equalsIgnoreCase(res) || "Exception Updating Records".equalsIgnoreCase(res)) {
+                    return new ResponseEntity<>("Failed", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+
+        } catch (Exception e){
+            return new ResponseEntity<>("Failed", HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
     @Override
@@ -145,12 +159,12 @@ public class CommonServiceImpl implements CommonService {
         url = url.replace("{key}", tmdbKey);
 
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
-
+        res.getResults().retainAll(res.getResults().subList(0,8));
         return new Gson().toJson(res);
     }
 
     @Override
-    public String search(String name, int pageNo) {
+    public ResponseEntity search(String name, int pageNo) {
 
         String url = StreamConstants.TMDB_URL + "/search/multi" + StreamConstants.TMDB_API + "&query=" + name + "&page="
                 + pageNo;
@@ -159,20 +173,29 @@ public class CommonServiceImpl implements CommonService {
 
         SearchResponse res = WebClient.create().get().uri(url).retrieve().bodyToMono(SearchResponse.class).block();
 
-        List<Result> removeList = new ArrayList<>();
+        if (res.getResults().size() > 0) {
+            List<Result> removeList = new ArrayList<>();
 
-        for (Result result : res.getResults()) {
-            if (null == result.getPoster_path() || (!"movie".equalsIgnoreCase(result.getMedia_type())
-                    && !"tv".equalsIgnoreCase(result.getMedia_type()))) {
-                removeList.add(result);
+            for (Result result : res.getResults()) {
+                if (null == result.getPoster_path() || (!"movie".equalsIgnoreCase(result.getMedia_type())
+                        && !"tv".equalsIgnoreCase(result.getMedia_type()))) {
+                    removeList.add(result);
+                }
             }
+
+            res.getResults().removeAll(removeList);
+
+            res.setTotal_results(res.getResults().size());
+
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } else {
+
+            Map<String, String> map = new HashMap<>();
+            map.put("result", "Not Found");
+
+            return new ResponseEntity<>(map, HttpStatus.I_AM_A_TEAPOT);
         }
 
-        res.getResults().removeAll(removeList);
-
-        res.setTotal_results(res.getResults().size());
-
-        return new Gson().toJson(res);
     }
 
     @Override

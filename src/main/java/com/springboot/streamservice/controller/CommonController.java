@@ -4,6 +4,7 @@ import com.springboot.streamservice.bean.Featured;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class CommonController {
     }
 
     @GetMapping(value = "/search", produces = "application/json")
-    public String indexPage(@RequestParam(value = "name") String name,
-                            @RequestParam(value = "page", required = false) String page) {
+    public ResponseEntity<?> indexPage(@RequestParam(value = "name") String name,
+                                       @RequestParam(value = "page", required = false) String page) {
         int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
         return commonService.search(name, pageNo);
     }

@@ -3,6 +3,7 @@ package com.springboot.streamservice.controller;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +19,6 @@ public class MovieController {
 
     @Autowired
     CommonService commonService;
-
-    @GetMapping(value = "/searchMovie", produces = "application/json")
-    public String searchMovie(@RequestParam(value = "name") String name,
-                              @RequestParam(value = "page", required = false) String page) {
-        int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
-        return movieService.searchMovieByName(name, pageNo);
-    }
 
     @GetMapping(value = "/getMovie/{id}", produces = "application/json")
     public String findMovie(@PathVariable String id) {

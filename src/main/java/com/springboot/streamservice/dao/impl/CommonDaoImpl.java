@@ -39,7 +39,7 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    public void insertFeatured(Featured featured) {
+    public String insertFeatured(Featured featured) {
         try{
             if(StreamConstants.INSERT.equalsIgnoreCase(featured.getOperation())){
                 jdbcTemplate.update(
@@ -51,11 +51,21 @@ public class CommonDaoImpl implements CommonDao {
                         "DELETE FROM featured WHERE imdbid = ?",
                         featured.getImdbId()
                 );
+            }else if(StreamConstants.UPDATE.equalsIgnoreCase(featured.getOperation()) && 0 != featured.getId()){
+                jdbcTemplate.update(
+                        "UPDATE featured set imdbid = ?, type = ? where id = ?",
+                        featured.getImdbId(), featured.getType(), featured.getId()
+                );
+            } else {
+                return "No Record Updated";
             }
 
         } catch (Exception e){
             System.err.println(e);
+            return "Exception Updating Records";
         }
+
+        return "Success";
 
     }
 
