@@ -193,7 +193,7 @@ public class CommonServiceImpl implements CommonService {
             Map<String, String> map = new HashMap<>();
             map.put("results", "Not Found");
 
-            return new ResponseEntity<>(map, HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>(map, HttpStatus.OK);
         }
 
     }
