@@ -78,21 +78,26 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public ResponseEntity<?> updateFeatured(List<Featured> featuredList) {
-        try{
+    public ResponseEntity<?> getFeatured() {
 
-            for (Featured featured :
-                    featuredList) {
-                String res = commonDao.insertFeatured(featured);
-                if ("No Record Updated".equalsIgnoreCase(res) || "Exception Updating Records".equalsIgnoreCase(res)) {
-                    return new ResponseEntity<>("Failed", HttpStatus.INTERNAL_SERVER_ERROR);
-                }
+        List<Featured> featuredList = commonDao.featured();
+
+        return new ResponseEntity<>(featuredList, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> updateFeatured(Featured featured, String operation) {
+        try {
+
+            String res = commonDao.insertFeatured(featured, operation);
+            if ("No Record Updated".equalsIgnoreCase(res) || "Exception Updating Records".equalsIgnoreCase(res)) {
+                return new ResponseEntity<>("Failed", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             return new ResponseEntity<>("Success", HttpStatus.OK);
 
-        } catch (Exception e){
-            return new ResponseEntity<>("Failed", HttpStatus.EXPECTATION_FAILED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e, HttpStatus.EXPECTATION_FAILED);
         }
 
     }
@@ -147,6 +152,7 @@ public class CommonServiceImpl implements CommonService {
             }
         } catch (Exception e) {
             System.err.println("Movie Service Impl || trendingMovies ||" + e);
+//            return new ResponseEntity<>(e, HttpStatus.EXPECTATION_FAILED);
         }
 
         return new Gson().toJson("{\"Error\": \"invalid\"}");
@@ -185,7 +191,9 @@ public class CommonServiceImpl implements CommonService {
 
             res.getResults().removeAll(removeList);
 
-            res.setTotal_results(res.getResults().size());
+            if(removeList.size() > 0){
+                res.setTotal_results(res.getTotal_results() - removeList.size());
+            }
 
             return new ResponseEntity<>(res, HttpStatus.OK);
         } else {
@@ -228,5 +236,42 @@ public class CommonServiceImpl implements CommonService {
         }
 
         return commonDao.insertUser(user);
+    }
+
+    @Override
+    public ResponseEntity getStreamData(int pageNo, int limitNo) {
+
+        try {
+            HashMap<String, Object> map = new HashMap<>();
+
+            int totalResults = commonDao.getStreamDataCount();
+
+            List<Stream> streamList = commonDao.getStreamData(pageNo, limitNo);
+
+            map.put("page", pageNo);
+            map.put("results", streamList);
+            map.put("total_pages", totalResults / limitNo);
+            map.put("total_results", totalResults);
+
+            return new ResponseEntity<>(map, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e, HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @Override
+    public ResponseEntity updateStreamData(Stream stream, String operation) {
+        try {
+
+            String res = commonDao.insertStream(stream, operation);
+            if ("No Record Updated".equalsIgnoreCase(res) || "Exception Updating Records".equalsIgnoreCase(res)) {
+                return new ResponseEntity<>("Failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(e, HttpStatus.EXPECTATION_FAILED);
+        }
     }
 }

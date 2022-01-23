@@ -1,9 +1,7 @@
 package com.springboot.streamservice.controller;
 
-import com.springboot.streamservice.bean.AuthenticationRequest;
-import com.springboot.streamservice.bean.AuthenticationResponse;
-import com.springboot.streamservice.bean.Featured;
-import com.springboot.streamservice.bean.UserBean;
+import com.springboot.streamservice.bean.*;
+import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.CommonService;
 import com.springboot.streamservice.service.impl.MyUserDetailsService;
 import com.springboot.streamservice.util.JwtUtil;
@@ -37,11 +35,11 @@ public class AdminController {
 
     @PostMapping(value = "/authenticate", produces = "application/json")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        try{
+        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
-        }catch (BadCredentialsException e){
+        } catch (BadCredentialsException e) {
             throw new Exception("Incorrect Username Or Password");
         }
 
@@ -58,26 +56,48 @@ public class AdminController {
         return ResponseEntity.ok(commonService.registerUser(user));
     }
 
-    @PostMapping(value = "/updateFeatured", produces = "application/json")
-    public ResponseEntity<?> updateFeatured(@RequestBody List<Featured> featured) {
-        return commonService.updateFeatured(featured);
+    @GetMapping(value = "/getFeatured", produces = "application/json")
+    public ResponseEntity<?> getFeatured() {
+        return commonService.getFeatured();
     }
+
+    @PostMapping(value = "/updateFeatured", produces = "application/json")
+    public ResponseEntity<?> updateFeatured(@RequestBody Featured featured) {
+        return commonService.updateFeatured(featured, StreamConstants.INSERT);
+    }
+
+    @DeleteMapping(value = "/updateFeatured", produces = "application/json")
+    public ResponseEntity<?> DeleteFeatured(@RequestBody Featured featured) {
+        return commonService.updateFeatured(featured, StreamConstants.DELETE);
+    }
+
 
     @GetMapping(value = "/moveToDb", produces = "application/json")
     public ResponseEntity<?> moveToDb() {
         return ResponseEntity.ok(commonService.moveToDb());
     }
 
-    public String getUserNameFromToken(HttpServletRequest request){
-        final String authorizationHeader = request.getHeader("Authorization");
-        String username = null;
-        String jwt = null;
-
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
-        }
-
-        return username;
+    @GetMapping(value = "/getMoviesList", produces = "application/json")
+    public ResponseEntity<?> getMovies(@RequestParam(value = "page", required = false) String page,
+                                       @RequestParam(value = "limit", required = false) String limit) {
+        int pageNo = null != page && (Integer.parseInt(page) > 1) ? Integer.parseInt(page) : 1;
+        int limitNo = null != limit && (Integer.parseInt(limit) > 20) ? Integer.parseInt(limit) : 20;
+        return commonService.getStreamData(pageNo, limitNo);
     }
+
+    @PostMapping(value = "/updateMovies", produces = "application/json")
+    public ResponseEntity<?> insertMovies(@RequestBody Stream stream) {
+        return commonService.updateStreamData(stream, StreamConstants.INSERT);
+    }
+
+    @PutMapping(value = "/updateMovies", produces = "application/json")
+    public ResponseEntity<?> updateMovies(@RequestBody Stream stream) {
+        return commonService.updateStreamData(stream, StreamConstants.UPDATE);
+    }
+
+    @DeleteMapping(value = "/updateMovies", produces = "application/json")
+    public ResponseEntity<?> DeleteMovies(@RequestBody Stream stream) {
+        return commonService.updateStreamData(stream, StreamConstants.DELETE);
+    }
+
 }

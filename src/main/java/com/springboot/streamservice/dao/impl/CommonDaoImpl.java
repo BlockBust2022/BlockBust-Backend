@@ -2,6 +2,7 @@ package com.springboot.streamservice.dao.impl;
 
 import com.springboot.streamservice.bean.Featured;
 import com.springboot.streamservice.bean.MovieDbBean;
+import com.springboot.streamservice.bean.Stream;
 import com.springboot.streamservice.bean.UserBean;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.dao.CommonDao;
@@ -39,22 +40,17 @@ public class CommonDaoImpl implements CommonDao {
     }
 
     @Override
-    public String insertFeatured(Featured featured) {
+    public String insertFeatured(Featured featured, String operation) {
         try{
-            if(StreamConstants.INSERT.equalsIgnoreCase(featured.getOperation())){
+            if (StreamConstants.INSERT.equalsIgnoreCase(operation)) {
                 jdbcTemplate.update(
                         "INSERT INTO featured (imdbid, type) VALUES (?, ?)",
                         featured.getImdbId(), featured.getType()
                 );
-            }else if (StreamConstants.DELETE.equalsIgnoreCase(featured.getOperation())){
+            } else if (StreamConstants.DELETE.equalsIgnoreCase(operation)) {
                 jdbcTemplate.update(
-                        "DELETE FROM featured WHERE imdbid = ?",
-                        featured.getImdbId()
-                );
-            }else if(StreamConstants.UPDATE.equalsIgnoreCase(featured.getOperation()) && 0 != featured.getId()){
-                jdbcTemplate.update(
-                        "UPDATE featured set imdbid = ?, type = ? where id = ?",
-                        featured.getImdbId(), featured.getType(), featured.getId()
+                        "DELETE FROM featured WHERE id = ?",
+                        featured.getId()
                 );
             } else {
                 return "No Record Updated";
@@ -93,5 +89,47 @@ public class CommonDaoImpl implements CommonDao {
     @Override
     public Integer checkIfUserExist(String userName) {
         return jdbcTemplate.queryForObject("select count(*) from user where username = ?", Integer.class, userName);
+    }
+
+    @Override
+    public List<Stream> getStreamData(int pageNo, int limitNo) {
+        int offset = (pageNo - 1) * limitNo;
+        return jdbcTemplate.query("select * from stream order by imdbid limit ?,?", BeanPropertyRowMapper.newInstance(Stream.class), offset, limitNo);
+    }
+
+    @Override
+    public Integer getStreamDataCount() {
+        return jdbcTemplate.queryForObject("select count(*) from stream", Integer.class);
+    }
+
+    @Override
+    public String insertStream(Stream stream, String operation) {
+        try {
+            if (StreamConstants.INSERT.equalsIgnoreCase(operation)) {
+                jdbcTemplate.update(
+                        "INSERT INTO stream (url, imdbid, movie_name) VALUES (?, ?, ?)",
+                        stream.getUrl(), stream.getImdbid(), stream.getMovie_name()
+                );
+            } else if (StreamConstants.DELETE.equalsIgnoreCase(operation)) {
+                jdbcTemplate.update(
+                        "DELETE FROM stream WHERE id = ?",
+                        stream.getId()
+                );
+            } else if (StreamConstants.UPDATE.equalsIgnoreCase(operation) && 0 != stream.getId()) {
+                jdbcTemplate.update(
+                        "UPDATE stream set imdbid = ?, url = ?, movie_name = ? where id = ?",
+                        stream.getImdbid(), stream.getUrl(), stream.getMovie_name(), stream.getId()
+                );
+            } else {
+                return "No Record Updated";
+            }
+
+        } catch (Exception e) {
+            System.err.println(e);
+            return "Exception Updating Records";
+        }
+
+        return "Success";
+
     }
 }
