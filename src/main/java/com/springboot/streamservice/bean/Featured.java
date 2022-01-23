@@ -4,7 +4,6 @@ public class Featured {
     int id;
     String imdbId;
     String type;
-    String operation;
 
     public int getId() {
         return id;
@@ -28,13 +27,5 @@ public class Featured {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getOperation() {
-        return operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
     }
 }
