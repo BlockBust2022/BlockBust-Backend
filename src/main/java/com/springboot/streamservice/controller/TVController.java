@@ -4,6 +4,7 @@ import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.service.CommonService;
 import com.springboot.streamservice.service.TVService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +19,7 @@ public class TVController {
     CommonService commonService;
 
     @GetMapping(value = "/getSeason/{id}", produces = "application/json")
-    public String getSeasons(@PathVariable String id) {
+    public ResponseEntity<?> getSeasons(@PathVariable String id) {
         return tvService.getTvById(id);
     }
 

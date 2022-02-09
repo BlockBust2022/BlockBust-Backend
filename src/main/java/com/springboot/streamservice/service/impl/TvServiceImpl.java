@@ -7,17 +7,25 @@ import com.springboot.streamservice.bean.SearchResponse;
 import com.springboot.streamservice.bean.TvEpisodeResponse;
 import com.springboot.streamservice.bean.TvSeasonResponse;
 import com.springboot.streamservice.bean.tmbdbean.Episode;
+import com.springboot.streamservice.bean.tmbdbean.Result;
 import com.springboot.streamservice.bean.tmbdbean.Seasons;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.TVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TvServiceImpl implements TVService {
@@ -29,7 +37,7 @@ public class TvServiceImpl implements TVService {
 	private CommonDao commonDao;
 
 	@Override
-	public String getTvById(String id) {
+	public ResponseEntity<?> getTvById(String id) {
 
 		String apiKey = StreamConstants.TMDB_API;
 		apiKey = apiKey.replace("{key}", tmdbKey);
@@ -41,11 +49,11 @@ public class TvServiceImpl implements TVService {
 		JsonObject showImdbJson = getShowImdbId(id, apiKey);
 		res.setImdbId(showImdbJson.get("imdb_id").getAsString());
 
-		if(res.getSeasons().get(0).getSeason_number() == 0){
+		if (res.getSeasons().get(0).getSeason_number() == 0) {
 			res.getSeasons().remove(0);
 		}
 
-		Seasons season = res.getSeasons().get((res.getSeasons().get(0).getSeason_number() == 0)?1:0);
+		Seasons season = res.getSeasons().get((res.getSeasons().get(0).getSeason_number() == 0) ? 1 : 0);
 		String seasonNo = Integer.toString(season.getSeason_number());
 		TvEpisodeResponse ep = getTvEpisodeResponse(id, apiKey, seasonNo);
 
@@ -53,7 +61,8 @@ public class TvServiceImpl implements TVService {
 
 		setEpisodes(id, seasonNo, apiKey, ep, res.getImdbId());
 
-		return new Gson().toJson(res);
+		return new ResponseEntity<>(res, HttpStatus.OK);
+
 	}
 
 	private TvEpisodeResponse getTvEpisodeResponse(String id, String apiKey, String seasonNo) {
@@ -86,26 +95,44 @@ public class TvServiceImpl implements TVService {
 	}
 
 	private void setEpisodes(String id, String seasonNo, String apiKey, TvEpisodeResponse ep, String showIMDBId) {
-		for(Episode episode : ep.getEpisodes()){
-			String episodeNo = Integer.toString(episode.getEpisode_number());
 
-			String epImdbId = StreamConstants.TMDB_URL + "tv/" + id + "/season/" + seasonNo
-					+ "/episode/" + episodeNo + "/external_ids" + apiKey;
+		Date today = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Iterator<Episode> iter;
 
-			String json = WebClient.create().get().uri(epImdbId).retrieve().bodyToMono(String.class).block();
+		iter = ep.episodes.iterator();
+		try {
+			while (iter.hasNext()) {
+				Episode episode = iter.next();
+				Date newDate = sdf.parse(episode.getAir_date());
+				if (newDate.after(today)) {
+					iter.remove();
+				} else {
 
-			JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
+					String episodeNo = Integer.toString(episode.getEpisode_number());
 
-			if(!"null".equalsIgnoreCase(convertedObject.get("imdb_id").toString())) {
-				String imdbId = convertedObject.get("imdb_id").getAsString();
-				episode.setImdbId(imdbId);
-				episode.setUrl(generateTvUrl(imdbId, showIMDBId, episode.getSeason_number(), episode.getEpisode_number()));
-			}else {
-				episode.setStatus("Not Avaliable");
+					String epImdbId = StreamConstants.TMDB_URL + "tv/" + id + "/season/" + seasonNo + "/episode/"
+							+ episodeNo + "/external_ids" + apiKey;
+
+					String json = WebClient.create().get().uri(epImdbId).retrieve().bodyToMono(String.class).block();
+
+					JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
+
+					if (!"null".equalsIgnoreCase(convertedObject.get("imdb_id").toString())) {
+						String imdbId = convertedObject.get("imdb_id").getAsString();
+						episode.setImdbId(imdbId);
+						episode.setUrl(generateTvUrl(imdbId, showIMDBId, episode.getSeason_number(),
+								episode.getEpisode_number()));
+					} else {
+						iter.remove();
+					}
+				}
 			}
+		} catch (Exception e) {
+			System.err.println("Movie Service Impl || trendingMovies ||" + e);
 		}
-	}
 
+	}
 
 	public List<String> generateTvUrl(String imdbId, String showImdbIdUrl, int season_number, int episode_number) {
 		List<String> list = new ArrayList<>();

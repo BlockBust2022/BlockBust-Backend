@@ -1,8 +1,10 @@
 package com.springboot.streamservice.service;
 
+import org.springframework.http.ResponseEntity;
+
 public interface TVService {
 
-    String getTvById(String id);
+    ResponseEntity<?> getTvById(String id);
 
     String getEpisodes(String id, String seasonNo);
 }

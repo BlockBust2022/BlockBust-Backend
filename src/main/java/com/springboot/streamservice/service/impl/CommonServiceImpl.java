@@ -170,7 +170,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public ResponseEntity search(String name, int pageNo) {
+    public ResponseEntity<?> search(String name, int pageNo) {
 
         String url = StreamConstants.TMDB_URL + "/search/multi" + StreamConstants.TMDB_API + "&query=" + name + "&page="
                 + pageNo;

@@ -6,9 +6,9 @@ use streamdb;
 
 create table stream(
    id INT NOT NULL AUTO_INCREMENT,
-   movie_name VARCHAR(100) NOT NULL,
+   movie_name VARCHAR(200),
    url VARCHAR(100) NOT NULL,
-   imdbid VARCHAR(10) NOT NULL,
+   imdbid VARCHAR(10),
    PRIMARY KEY ( id )
 );
 
@@ -16,6 +16,14 @@ create table featured(
    id INT NOT NULL AUTO_INCREMENT,
    imdbid VARCHAR(10) NOT NULL,
    type VARCHAR(10) NOT NULL,
+   PRIMARY KEY ( id )
+);
+
+create table user(
+   id INT NOT NULL AUTO_INCREMENT,
+   username VARCHAR(50) NOT NULL,
+   password VARCHAR(100) NOT NULL,
+   role VARCHAR(20),
    PRIMARY KEY ( id )
 );
 
