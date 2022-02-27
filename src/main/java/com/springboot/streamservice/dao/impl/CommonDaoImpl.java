@@ -36,7 +36,7 @@ public class CommonDaoImpl implements CommonDao {
 
     @Override
     public List<Featured> featured() {
-        return jdbcTemplate.query("SELECT * from featured", BeanPropertyRowMapper.newInstance(Featured.class));
+        return jdbcTemplate.query("SELECT * from featured order by id desc", BeanPropertyRowMapper.newInstance(Featured.class));
     }
 
     @Override
@@ -94,7 +94,7 @@ public class CommonDaoImpl implements CommonDao {
     @Override
     public List<Stream> getStreamData(int pageNo, int limitNo) {
         int offset = (pageNo - 1) * limitNo;
-        return jdbcTemplate.query("select * from stream order by imdbid limit ?,?", BeanPropertyRowMapper.newInstance(Stream.class), offset, limitNo);
+        return jdbcTemplate.query("select * from stream order by id desc limit ?,?", BeanPropertyRowMapper.newInstance(Stream.class), offset, limitNo);
     }
 
     @Override
