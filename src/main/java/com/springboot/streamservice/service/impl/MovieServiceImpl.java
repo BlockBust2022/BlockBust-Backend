@@ -5,10 +5,13 @@ import com.springboot.streamservice.bean.*;
 import com.springboot.streamservice.constants.StreamConstants;
 import com.springboot.streamservice.dao.CommonDao;
 import com.springboot.streamservice.service.MovieService;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +37,13 @@ public class MovieServiceImpl implements MovieService {
 
         String imdbId = tmbdJson.imdb_id;
 
+        if(imdbId == null) {
+//        	String jsonString = new JSONObject().put("error", "Not Found").toString();
+        	return new Gson().toJson("Not Found");
+        }
+        
         tmbdJson.setUrl(generateUrl(imdbId));
-
+        
         return new Gson().toJson(tmbdJson);
 
     }
